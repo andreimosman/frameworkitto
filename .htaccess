@@ -1,0 +1,9 @@
+# Redirect
+# The code bellow will redrect all files and directories that was not found to index.php
+# If you are using nginx please read nginx.txt
+#####
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L]

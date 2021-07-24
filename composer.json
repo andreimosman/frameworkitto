@@ -1,0 +1,24 @@
+{
+    "name": "andreimosman/frameworkitto",
+    "type": "library",
+    "description": "Rapid Prototyping MVC Framework for PHP",
+    "keywords": ["mvc","prototyping"],
+    "homepage": "https://github.com/andreimosman/frameworkitto",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andrei de Oliveira Mosman",
+            "email": "andrei.mosman@gmail.com",
+            "homepage": "https://waybeyondlabs.com/frameworkitto",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Frameworkitto": "Frameworkitto"
+        }
+    }
+}

@@ -1,0 +1,9 @@
+#
+# It will give you an idea of how to redirect files and directories not found to index.php (to do the routing magic)
+#
+location / { # Or the base url of your app
+        try_files $uri $uri/ /index.php$is_args$args;
+        location ~ \.php$ {
+            # ... php configuration goes here
+        }
+}
