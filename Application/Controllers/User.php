@@ -5,12 +5,15 @@ namespace Application\Controllers;
 use Frameworkitto\Router;
 use Frameworkitto\Controller;
 
+use Application\Models\Users;
+
 class User extends Controller {
 
     /** SAMPLE:
     protected $model;
 
     public function init() {
+        // In order for this to work you must to call Model::setPDO() on index.php
         $this->model = new UsersModel();
     }
     */
