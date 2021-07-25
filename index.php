@@ -10,7 +10,7 @@ use Frameworkitto\ControllerFactory;
  * If your app do access database you must to create a PDO instance then call static Model::setPDO()
  */
 // $pdo = new PDO("mysql:dbname=DBNAMEHERE;host=localhost", "username", "password");
-//$pdo = new PDO("mysql:dbname=Frameworkitto;host=localhost","Frameworkitto",""); // <-- Sample
+//$pdo = new PDO("mysql:dbname=frameworkitto;host=localhost","frameworkitto",""); // <-- Sample
 //Model::setPDO($pdo);
 
 /**
