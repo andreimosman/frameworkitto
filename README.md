@@ -6,7 +6,7 @@ I even used it on a production system, but it lacks of a few features.
 
 If you find this useful please write me. I'm also opened to contributions.
 
-To start a project using 
+To start a project use 
 
 ```
 composer create-project andreimosman/frameworkitto foldername
