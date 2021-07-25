@@ -2,6 +2,7 @@
     <form class="form-login" id="formLogin" method="POST" action="<?= $BASE_URL; ?>/user/login">
         <img class="mb-4" src="<?= $BASE_URL; ?>/assets/images/logo-frameworkitto.png" alt="" width="72" height="72">
         <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+        <span>Testing: email = 'test@test.com' and pass = '1234' it's poorly implemented at Application/Controllers/Users.php</span>
         <label for="inputEmail" class="sr-only">Email address</label>
         <input name="email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
         <label for="inputPassword" class="sr-only">Password</label>
