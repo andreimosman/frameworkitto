@@ -26,9 +26,15 @@ Class Model {
     public $idField = 'id';
     public $uniqueFields = [];
 
+    // Use uuids to make ids unpredictable. 
+    // If you don't want you can set $this->uniqueIdField = null on init() of subclass 
+    // and remove it from $this->fields array;
+    public $uniqueIdField = 'uuid'; 
+
+    // Useful:
     public $createdAtField = 'created_at';
     public $modifiedAtField = 'modified_at';
-    public $deletedAtField = 'deleted_at';
+    public $deletedAtField = 'deleted_at'; // Softdelete
 
     public $orderBy = null;
 
@@ -69,11 +75,11 @@ Class Model {
     }
 
     public function commit() {
-        return self::$pdo->beginTransaction();
+        return self::$pdo->commit();
     }
 
     public function rollback() {
-        return self::$pdo->beginTransaction();
+        return self::$pdo->rollback();
     }
 
 
@@ -81,7 +87,11 @@ Class Model {
         $conditions = [];
         $bind = [];
         foreach($filter as $field => $value) {
-            $conditions[] = $field . " = :" . $field;
+            $op = " = ";
+            // TODO: Add support to IN () queries
+            // if( is_array($value) ) $op = " IN ";
+
+            $conditions[] = $field . " ".$op." :" . $field;
             $bind[":".$field] = $value;
         }
 
@@ -153,6 +163,25 @@ Class Model {
         return $data;
     }
 
+    public function uniqueId($id = 0) {
+        $id = (int)$id;
+        return uniqid(str_pad(dechex($id),8,"0",STR_PAD_BOTH));
+    }
+
+    protected $isSavingUniqueId = false;
+
+    public function saveUniqueIdIfNotSet($data) {
+
+        if( !$this->isSavingUniqueId && $this->uniqueIdField && !isset($data[ $this->uniqueIdField ]) ){
+            $this->isSavingUniqueId = true;
+            $data[ $this->uniqueIdField ] = $this->uniqueId($data["id"]);
+            $data = $this->update($data);
+            $this->isSavingUniqueId = false;
+        }
+
+        return($data);
+    }
+
     public function create($data) {
         if( $this->isViolatingUniqueConstraint($data) ) throw new ModelException('Unique constraint vaiolation');
 
@@ -174,6 +203,9 @@ Class Model {
 
         $savedData = $this->findFirstById($id);
 
+        // When your mysql doest not support default values to call uuid functions, for example
+        $savedData = $this->saveUniqueIdIfNotSet($savedData); 
+
         return($this->afterCreate($savedData));
 
     }
@@ -188,6 +220,11 @@ Class Model {
 
     public function update($data) {
         $data = $this->beforeUpdate($data);
+
+        // Only update uniqueId when is appropriated
+        if( $this->uniqueIdField && !$this->isSavingUniqueId ) {
+            unset($data[ $this->uniqueIdField ] );
+        }
 
         if( !$data[$this->idField] ) throw new ModelException("Didn't find table id");
 
@@ -219,6 +256,8 @@ Class Model {
         $this->execute($sql,$bind);
 
         $savedData = $this->findFirstById($data[$this->idField]);
+        $savedData = $this->saveUniqueIdIfNotSet($savedData);
+        
         return($this->afterUpdate($savedData));
     }
 
