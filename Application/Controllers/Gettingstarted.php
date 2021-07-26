@@ -4,7 +4,7 @@ namespace Application\Controllers;
 
 use Frameworkitto\Router;
 
-Class Gettingstart extends Authenticated {
+Class Gettingstarted extends Authenticated {
 
     /**
      * if you don't create any specific function, the controller will try to open a view /{controllername}/{actionname}

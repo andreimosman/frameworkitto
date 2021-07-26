@@ -14,8 +14,8 @@
             <li class="nav-item <?= $__ROUTE__['controller'] == 'home' ? 'active' : ''; ?>">
                 <a class="nav-link" href="<?= $BASE_URL; ?>/home/dashboard">Dashboard</a>
             </li>
-            <li class="nav-item <?= $__ROUTE__['controller'] == 'gettingstart' ? 'active' : ''; ?>">
-                <a class="nav-link" href="<?= $BASE_URL; ?>/gettingstart">Getting Start</a>
+            <li class="nav-item <?= $__ROUTE__['controller'] == 'gettingstarted' ? 'active' : ''; ?>">
+                <a class="nav-link" href="<?= $BASE_URL; ?>/gettingstarted">Getting Started</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="<?= $BASE_URL; ?>/user/logout">Logout</a>
