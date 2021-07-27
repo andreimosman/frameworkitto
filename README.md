@@ -13,7 +13,7 @@ composer create-project andreimosman/frameworkitto foldername
 ```
 Please refer to the [Composer](https://getcomposer.org/) website for instructions on how to install it on your platform if you don't have it.
 
-Alternatively, you may also download Frameworkitto from the [releases page](https://github.com/andreimosman/frameworkitto/releases).
+Alternatively, you may also download Frameworkitto from the [releases page](https://github.com/andreimosman/frameworkitto/releases) and export it to your project's main folder.
 
 ## Contribute
 
