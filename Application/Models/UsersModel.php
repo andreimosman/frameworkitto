@@ -66,15 +66,26 @@ class UsersModel extends Model {
         $this->orderBy = 'nome';
 
     }
-
+  
+  
+    /**
+     * Before Creation function
+     * This function is always called before instantiating a new user. Can be used to set default values for an user object.
+     * @param $data Data of object that is going to be created
+     */
     public function beforeCreate($data) {
-        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT); //Encrypt password before storing.
         $data['email_token'] = md5(uniqid()); // Email confirmation token
         return($data);
     }
 
+    /**
+     * Before Update function
+     * This function is always called before updating an existing user. Can be used to validate/process updated data before sending to a database, for instance.
+     * @param $data Data of object that is going to be created
+     */
     public function beforeUpdate($data) {
-        if( isset($data['password']) && trim($data['password']) ) $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        if( isset($data['password']) && trim($data['password']) ) $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT); //Encrypt password before storing.
         return($data);
     }
 
