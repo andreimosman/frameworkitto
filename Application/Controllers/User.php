@@ -20,11 +20,15 @@ class User extends Controller {
 
 
     /**
-     * You can create function to handle http methods (ex: post($action), get($action), delete($action), put($action) off all requisitions)
+     * You can create functions to handle http methods (ex: post($action), get($action), delete($action), put($action) off all requisitions)
      * 
      * or you can create a function that handles entire action. ex: postLogin() on controller user handles POST to /user/login
      */
 
+    /**
+     * Sample login function
+     * Route: @POST "/user/login"
+     */
     public function postLogin() {
         $email = @$_REQUEST['email'];
         $password = @$_REQUEST['password'];
@@ -43,6 +47,10 @@ class User extends Controller {
         return http_response_code(401); // Failed authentication;
     }
 
+    /**
+     * Sample signup function that receives data
+     * Route: @POST "/user/signup"
+     */
     public function postSignup() {
         $httpResponseCode = 400;
 
@@ -56,6 +64,10 @@ class User extends Controller {
 
     }
 
+    /**
+     * Sample password recovery function
+     * Route: @POST "/user/forgotpassword"
+     */
     function postForgotPassword() {
         $email = @$_REQUEST['email'];
         return $this->setJSONResponse([
@@ -69,7 +81,7 @@ class User extends Controller {
      */
 
     /**
-     * The example bellow handle all actions
+     * The example below handles all actions
      */
     public function post($action) {
         echo "ACTION: $action";
