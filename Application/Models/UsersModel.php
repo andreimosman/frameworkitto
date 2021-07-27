@@ -49,46 +49,38 @@ CREATE TABLE `users` (
 
 class UsersModel extends Model {
 
-    /**
-     * Configure model object. 
-     */
+    //Use init function of base Model to set up basic parameters for a User model:
     public function init() {
 
-        $this->tableName = 'users';
+        $this->tableName = 'users'; //This means this model will interface with the 'users' table on the database.
+        //These are the fields which you will have created on the database, alongisde the default 'created', 'modified', 'deleted' and UUID fields.
         $this->fields = [
             'id', 'email', 'password','active', 'recovery_token', 'name', 'address',
             'email_token', $this->createdAtField, $this->modifiedAtField, $this->deletedAtField,
             $this->uniqueIdField,
-        ];
-        $this->idField = 'id';
-        $this->uniqueFields = ['email'];
+        ]; 
+        $this->idField = 'id'; //The field that is supposed to be the main indentifier
+        $this->uniqueFields = ['email']; //Fields that are supposed to be unique
 
-        $this->orderBy = 'nome';
+        $this->orderBy = 'nome'; //Which field should Frameworkitto use to order results returned from a find() call.
 
     }
   
   
-    /**
-     * Before Creation function
-     * This function is always called before instantiating a new user. Can be used to set default values for an user object.
-     * @param $data Data of object that is going to be created
-     */
+    //Here we are setting a beforeCreate to encrypt the password before it's sent to a database.
     public function beforeCreate($data) {
         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT); //Encrypt password before storing.
         $data['email_token'] = md5(uniqid()); // Email confirmation token
         return($data);
     }
 
-    /**
-     * Before Update function
-     * This function is always called before updating an existing user. Can be used to validate/process updated data before sending to a database, for instance.
-     * @param $data Data of object that is going to be created
-     */
+    //The same is being set up for when a password is being updated.
     public function beforeUpdate($data) {
         if( isset($data['password']) && trim($data['password']) ) $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT); //Encrypt password before storing.
         return($data);
     }
 
+    //Please look at the parent Model class to learn more functions you can use on these child models.
 }
 
 
