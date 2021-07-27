@@ -13,6 +13,9 @@ composer create-project andreimosman/frameworkitto foldername
 ```
 Please refer to the [Composer](https://getcomposer.org/) website for instructions on how to install it on your platform if you don't have it.
 
+## Basic usage
+Included with Frameworkitto is a **sample project** showcasing the framework's model-view-controller based structure. Check the files to see functions and features available to use.
+
 Alternatively, you may also download Frameworkitto from the [releases page](https://github.com/andreimosman/frameworkitto/releases) and export it to your project's main folder.
 
 ## Contribute
