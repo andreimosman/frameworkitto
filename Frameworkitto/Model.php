@@ -21,7 +21,9 @@ Class Model {
         return(self::$pdo);
     }
 
-    public $tableName;  // Default table to perform crud operations
+    //Below are some values that you can set when instantiating a child of this model using the init() function.
+    
+    public $tableName;  //On your child model, set this to the respective database table name that the child is related to. 
     public $fields = [];
     public $idField = 'id';
     public $uniqueFields = [];
@@ -31,12 +33,14 @@ Class Model {
     // and remove it from $this->fields array;
     public $uniqueIdField = 'uuid'; 
 
-    // Useful:
+    // These fields are used to store the date and time by which model objects have been created, modified or deleted.
+    // It is recommended that you get these fields set up for your model on the respective database table.
     public $createdAtField = 'created_at';
     public $modifiedAtField = 'modified_at';
-    public $deletedAtField = 'deleted_at'; // Softdelete
+    public $deletedAtField = 'deleted_at'; //This field is used to mark objects as deleted without actually losing the data.
 
-    public $orderBy = null;
+    // Use this on your child model to specify a field by which the results of a find() call should be ordered by.
+    public $orderBy = null; //TODO: Allow order by ASC or DESC
 
     public function __construct() {
         self::getPDOInstance(); // It will throw an exception if PDO is not set.
@@ -64,7 +68,11 @@ Class Model {
 
     }
 
-    public function init() { } // Instantiate on child
+    /**
+     * Initialize function
+     * Set parameters and configurations that are specific of the model.
+     */
+    public function init() { } //This function should be instantiated from the child.
 
     public function getFields() {
         return count($this->fields) ? implode(",", $this->fields) : '*';
@@ -82,7 +90,11 @@ Class Model {
         return self::$pdo->rollback();
     }
 
-
+    /**
+     * Get Conditions And Bind
+     * Construct PDO supported attributes for MySQL queries to select one or many objects. 
+     * @param array $filter Array of key/pair values with the name of the parameter, and the value it needs to contain. Only supports singular values at the moment.
+     */
     public function getConditionsAndBind($filter) : Array{
         $conditions = [];
         $bind = [];
@@ -101,17 +113,25 @@ Class Model {
         ];
     }
 
+    /**
+     * Find Object(s) of model
+     * Function used to interface with a database to find one or many objects of a model, based on filters if any are given. Supports only MySQL at the moment.
+     * @param array $filter Array of key/pair values with the name of the parameter, and the value it needs to contain. Only supports singular values at the moment.
+     * @param bool $forUpdate Set this to TRUE if you want to lock the found objects from being updated by other functions. Should only be used inside transactions. Default is FALSE.
+     */
     public function find($filter=[],$forUpdate=false) { // Filter is to compose a very basic AND filter
         
         $fields = $this->getFields();
         
         $sql = "SELECT $fields FROM {$this->tableName}";
 
+        //Construct parameters for query.
         $conditionsAndBind = $this->getConditionsAndBind($filter);
 
 
         //$conditionsAndBind["conditions"];
         $conditions = [];
+        //This is used to not return any objects that were marked as deleted.
         if( $this->deletedAtField ) $conditions[] = $this->deletedAtField . " IS NULL";
         if( $conditionsAndBind["conditions"] ) $conditions[] = $conditionsAndBind["conditions"];
 
@@ -126,8 +146,16 @@ Class Model {
 
     }
 
+    /**
+     * Find Object of model
+     * Function used to interface with a database to find only one object of a model, based on filters if any are given. Supports only MySQL at the moment. If a selection results in many objects being fetched, only the first one will be returned.
+     * @param array $filter Array of key/pair values with the name of the parameter, and the value it needs to contain. Only supports singular values at the moment.
+     * @param bool $forUpdate Set this to TRUE if you want to lock the found objects from being updated by other functions. Should only be used inside transactions. Default is FALSE.
+     */
     public function findFirst($filter=[],$forUpdate=false) {
+        //Calls base find function above.
         $data = $this->find($filter,$forUpdate);
+        //If a selection results in many objects being fetched, only the first one will be returned.
         return count($data) ? $data[0] : null;
     }
 
@@ -154,15 +182,31 @@ Class Model {
 
     }
 
-    // Override on specific model when needed
+    /**
+     * Before Creation function
+     * Use this function if you have code that needs to be ran before a new object of the model is created on the database. Can be used for values that need to be processed in a certain way before that.
+     * @param $data Data of object that is going to be created
+     */
     public function beforeCreate($data) {
+        //Instantiate this function on the child model to run code specifically for it.
         return $data;
     }
 
+    /**
+     * After Creation function
+     * Use this function if you have code that needs to be ran after a new object of the model is created on the database. Can be used to validate an object's creation after it's done, for example.
+     * @param $data Data of object that is going to be created
+     */
     public function afterCreate($data) {
+        //Instantiate this function on the child model to run code specifically for it.
         return $data;
     }
 
+    /**
+     * Generate UUID
+     * Generates a 128-bit universally unique identifier.
+     * @param int id Base numeric ID from which the UUID should be made from.
+     */
     public function uniqueId($id = 0) {
         $id = (int)$id;
         return uniqid(str_pad(dechex($id),8,"0",STR_PAD_BOTH));
@@ -170,6 +214,11 @@ Class Model {
 
     protected $isSavingUniqueId = false;
 
+    /**
+     * Save Unique ID If Not Set
+     * Generates a UUID for a model object if there is none, or the database doesn't support it.
+     * @param $data Data of object to check if UUID exists
+     */
     public function saveUniqueIdIfNotSet($data) {
 
         if( !$this->isSavingUniqueId && $this->uniqueIdField && !isset($data[ $this->uniqueIdField ]) ){
@@ -182,8 +231,14 @@ Class Model {
         return($data);
     }
 
+    /**
+     * Create model object
+     * Function used to interface with a database to create a new object of a model. Also generates a UUID for the object if there is none set. Supports only MySQL at the moment.
+     * @param $data Data of object
+     */
     public function create($data) {
-        if( $this->isViolatingUniqueConstraint($data) ) throw new ModelException('Unique constraint vaiolation');
+        //Check the data first to see if there are no constraint violations.
+        if( $this->isViolatingUniqueConstraint($data) ) throw new ModelException('Unique constraint violation');
 
         $data = $this->beforeCreate($data);
 
@@ -195,29 +250,46 @@ Class Model {
             $fields[] = $field;
             $values[] = ':'.$field;
             $bind[':'.$field] = $value;
-        }
-        $sql = "INSERT INTO {$this->tableName} ( " .implode(",",$fields) . ") VALUES (" . implode(",",$values) . ")";
+        } //Deconstruct object data in order to create insert statement
+        $sql = "INSERT INTO {$this->tableName} ( " .implode(",",$fields) . ") VALUES (" . implode(",",$values) . ")"; //Prepare MySQL statement for object insertion
         $this->execute($sql,$bind);
 
+        //Fetch insertion in order to enable post-creation validation and other processing.
         $id = self::$pdo->lastInsertId();
-
         $savedData = $this->findFirstById($id);
 
-        // When your mysql doest not support default values to call uuid functions, for example
+        //If UUIDs are enabled on the model, Frameworkitto generates one and updates the object with it.
         $savedData = $this->saveUniqueIdIfNotSet($savedData); 
 
         return($this->afterCreate($savedData));
 
     }
 
+    /**
+     * Before Creation function
+     * Use this function if you have code that needs to be ran before an existing object of the model is updated on the database. Can be used for values that need to be processed in a certain way before that.
+     * @param $data Data of object that is going to be updated
+     */
     public function beforeUpdate($data) {
+        //Instantiate this function on the child model to run code specifically for it.
         return($data);
     }
 
+    /**
+     * After Creation function
+     * Use this function if you have code that needs to be ran after an existing object of the model is updated on the database. Can be used to validate an object's creation after it's done, for example.
+     * @param $data Data of object that is going to be updated
+     */
     public function afterUpdate($data) {
+        //Instantiate this function on the child model to run code specifically for it.
         return($data);
     }
 
+    /**
+     * Update function
+     * Function used to interface with a database to update an existing object of a model. Supports only MySQL at the moment.
+     * @param $data Data of object that is going to be updated
+     */
     public function update($data) {
         $data = $this->beforeUpdate($data);
 
@@ -261,6 +333,11 @@ Class Model {
         return($this->afterUpdate($savedData));
     }
 
+    /**
+     * Delete function
+     * Function used to interface with a database to mark an object of a model as deleted. Supports only MySQL at the moment.
+     * @param $data Data of object that is going to be deleted
+     */
     public function delete($filter) {
 
         if( !$filter || !count($filter) ) throw new ModelException('Delete without filter not allowed');
@@ -268,6 +345,7 @@ Class Model {
         $conditionsAndBind = $this->getConditionsAndBind($filter);
         if( !$conditionsAndBind["conditions"] ) throw new ModelException('Delete without filter not allowed');
 
+        //the deletedAtField is used so the object does not need to actually be deleted, but just "marked" as such.
         if($this->deletedAtField) {
             $sql = "UPDATE " . $this->tableName . " SET " . $this->deletedAtField . " = now() WHERE " . $conditionsAndBind["conditions"];
         } else {
