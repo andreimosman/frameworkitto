@@ -77,7 +77,7 @@ class User extends Controller {
     }
 
     /**
-     * /user/logout is handled by \Frameworkitto\Logout
+     * /user/logout is handled by \Frameworkitto\Controller::logout()
      */
 
     /**
