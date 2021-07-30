@@ -47,6 +47,15 @@ class User extends Controller {
         return http_response_code(401); // Failed authentication;
     }
 
+    // Sample code that sends confirmation email using templates.
+    public function sendConfirmationEmail($userData) {
+        $sender = new EmailSender();
+        $title = "My super app using Frameworkitto! Please confirm your email.";
+        $template = "_mailtemplates/email_confirmation"; // <-- Application/Views/_mailtemplates/email_confirmation.php
+        // $userData is passed as variables to the template
+        return $sender->sendEmailUsingTemplate($data['email'],$title,$template,$userData);
+    }
+
     /**
      * Sample signup function that receives data
      * Route: @POST "/user/signup"
@@ -58,6 +67,31 @@ class User extends Controller {
             "status" => "error",
             "message" => "This is just a sample code, please use 'test@test.com' password '1234' to login.",
         ];
+
+        /**
+        try {
+            // 1. Do your magic to create the account here (very rudimentar example bellow)
+            //$data = $this->model->create($_REQUEST);
+
+            // 2. Send confirmation email
+            //$this->sendConfirmationEmail($data);
+
+            // 3. Everything happened ok.
+            $httpResponseCode = 200;
+            $response = [
+                "status" => "success",
+                "message" => "Your account has been created. Please check your e-mail to activate-it before log-in.",
+                "url" => Router::getInstance()->getBaseURL() . "/user/login",
+            ];
+
+        } catch(\Exception $e) {
+            $httpResponseCode = 500; // <-- some error code here
+            $response = [
+                "status" => "error",
+                "message" => "Something happened... ",
+            ];
+        }
+        */
 
         http_response_code($httpResponseCode);
         $this->setJSONResponse($response);
