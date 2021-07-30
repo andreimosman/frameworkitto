@@ -47,6 +47,7 @@ class User extends Controller {
         return http_response_code(401); // Failed authentication;
     }
 
+    // Sample code that sends confirmation email using templates.
     public function sendConfirmationEmail($userData) {
         $sender = new EmailSender();
         $title = "My super app using Frameworkitto! Please confirm your email.";
