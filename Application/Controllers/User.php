@@ -81,7 +81,7 @@ class User extends Controller {
      */
 
     /**
-     * The example below handles all actions
+     * The example below handles POST all actions
      */
     public function post($action) {
         echo "ACTION: $action";
